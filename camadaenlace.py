@@ -1,3 +1,5 @@
+# JAMAIS MODIFIQUE O CONTEÚDO DESTE ARQUIVO
+
 import socket
 import asyncio
 
