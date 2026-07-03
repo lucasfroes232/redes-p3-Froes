@@ -22,16 +22,22 @@ def dados_recebidos(conexao, dados):
 def conexao_aceita(conexao):
     conexao.registrar_recebedor(dados_recebidos)   # usa esse mesmo recebedor para toda conexão aceita
 
-enlace = CamadaEnlaceLinux()
-rede = IP(enlace)
-rede.definir_endereco_host('192.168.88.231')  # altere para o endereço IP da sua máquina, consulte-o com o comando: ip addr
-rede.definir_tabela_encaminhamento([
-    ('192.168.88.231/32', '192.168.88.231'),  # altere aqui também para o endereço da sua máquina (sua máquina permite alcançar a si mesma)
-    ('0.0.0.0/0', '192.168.88.1')  # consulte sua rota padrão com o comando: ip route | grep default
-])
-servidor = Servidor(rede, 7000)
-servidor.registrar_monitor_de_conexoes_aceitas(conexao_aceita)
-asyncio.get_event_loop().run_forever()
+async def main():
+    enlace = CamadaEnlaceLinux()
+    rede = IP(enlace)
+    rede.definir_endereco_host('192.168.88.231')  # altere para o endereço IP da sua máquina, consulte-o com o comando: ip addr
+    rede.definir_tabela_encaminhamento([
+        ('192.168.88.231/32', '192.168.88.231'),  # altere aqui também para o endereço da sua máquina (sua máquina permite alcançar a si mesma)
+        ('0.0.0.0/0', '192.168.88.1')  # consulte sua rota padrão com o comando: ip route | grep default
+    ])
+    servidor = Servidor(rede, 7000)
+    servidor.registrar_monitor_de_conexoes_aceitas(conexao_aceita)
+
+    await asyncio.Event().wait()
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
 
 # IMPORTANTE: Para conectar ao servidor (por exemplo com o nc), você não vai mais usar o endereço localhost nem 127.0.0.1.
 # A partir de agora você vai usar o mesmo endereço que passou para rede.definir_endereco_host (acima).
